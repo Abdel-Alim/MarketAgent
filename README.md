@@ -1,120 +1,130 @@
 Multi-Agent AI Research System
 
-A stateful, LLM-powered research workflow that automates web information retrieval, research synthesis, analytical report generation, and report review using LangGraph, LangChain, and Tavily Search.
+<p align="center"> <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" /> <img src="https://img.shields.io/badge/LangGraph-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white" alt="LangGraph" /> <img src="https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white" alt="LangChain" /> <img src="https://img.shields.io/badge/OpenRouter-6467F2?style=for-the-badge&logo=openrouter&logoColor=white" alt="OpenRouter" /> <img src="https://img.shields.io/badge/Tavily-Web%20Search-0F766E?style=for-the-badge" alt="Tavily Search" /> </p>
 
-The system coordinates specialized AI agents through a supervisor-controlled workflow, transforming a research topic into a structured Markdown report supported by links to retrieved web sources.
+<p align="center"> <strong>Autonomous Research Workflows · Multi-Agent Orchestration · LLM-Powered Analysis</strong> </p>
+
+<p align="center"> A multi-agent AI system that transforms research topics into structured reports through web search, information synthesis, analytical generation, and a supervisor-controlled workflow. </p>
+
+<p align="center"> <a href="https://github.com/Abdel-Alim">GitHub Profile</a> </p>
 
 Overview
 
-Conducting research requires gathering information from multiple sources, synthesizing findings, identifying relevant insights, and presenting conclusions in a structured format.
+Multi-Agent AI Research System is a Python-based research automation project built with LangGraph and LangChain.
 
-This project explores how a multi-agent architecture can automate these stages through specialized agents operating over a shared state.
+It coordinates specialized AI agents through a shared state, using Tavily to retrieve web search results and an OpenRouter-compatible language model to summarize information, synthesize findings, and generate structured Markdown reports.
 
-Built with LangGraph, the workflow uses conditional routing to coordinate research, analysis, writing, and review. Language models handle information synthesis and analytical generation, while Tavily provides web search results.
+The workflow demonstrates how agent specialization and conditional graph routing can organize a multi-stage research process into a single executable pipeline.
 
-The implementation currently demonstrates this workflow using the Egyptian football player market as its example research topic.
-
-Architecture
-
-The system consists of five specialized agents coordinated through a stateful LangGraph workflow.
-
+System Architecture
 flowchart TD
-    A([Research Topic]) --> B[Supervisor]
-    B --> C[Researcher]
-    C --> D[Supervisor]
-    D --> E[Analyst]
-    E --> F[Supervisor]
-    F --> G[Writer]
-    G --> H[Supervisor]
-    H --> I[Critic]
-    I --> J[Supervisor]
-    J --> K{Approval or Revision Limit}
-    K -->|Approved / Limit Reached| L[Final Report]
-    K -->|Revision Required| G
+    A(["Research Topic"]) --> B["Supervisor"]
+    B --> C["Researcher"]
+    C --> D["Web Search · Tavily"]
+    D --> E["LLM Summarization"]
+    E --> B
 
-Agent Responsibilities
+    B --> F["Analyst"]
+    F --> G["Research Synthesis"]
+    G --> B
 
-Supervisor
+    B --> H["Writer"]
+    H --> I["Markdown Report"]
+    I --> B
 
-Controls workflow progression by evaluating the current state and selecting the next agent. It coordinates the execution sequence and determines when the workflow should terminate.
+    B --> J["Critic"]
+    J --> K{"Review Decision"}
+    K -->|Approved| L(["Final Report"])
+    K -->|Revision Required| H
 
-Researcher
+    style A fill:#172554,color:#ffffff,stroke:#60a5fa
+    style B fill:#312e81,color:#ffffff,stroke:#a5b4fc
+    style C fill:#164e63,color:#ffffff,stroke:#67e8f9
+    style F fill:#14532d,color:#ffffff,stroke:#86efac
+    style H fill:#713f12,color:#ffffff,stroke:#fcd34d
+    style J fill:#581c87,color:#ffffff,stroke:#d8b4fe
+    style L fill:#166534,color:#ffffff,stroke:#86efac
 
-Generates research questions, retrieves web results through Tavily Search, summarizes retrieved content using an LLM, and collects source titles and URLs.
 
-Analyst
+The supervisor controls transitions between workflow nodes. Each agent updates the shared state, allowing subsequent agents to consume previously collected research and generated content.
 
-Synthesizes the research notes into a detailed analysis of the selected topic using the configured language model.
+Implementation note: The current critic returns a predefined approval decision, so the revision path is supported by the graph but is not meaningfully exercised during normal execution.
+Agent Components
 
-Writer
+<table> <tr> <th>Component</th> <th>Role</th> </tr> <tr> <td>🎯 Supervisor</td> <td>Coordinates execution and selects the next agent through conditional routing.</td> </tr> <tr> <td>🔎 Researcher</td> <td>Generates research questions, retrieves web results, summarizes content, and collects source links.</td> </tr> <tr> <td>📊 Analyst</td> <td>Synthesizes collected research into a detailed analytical response.</td> </tr> <tr> <td>✍️ Writer</td> <td>Formats the analysis into a structured Markdown report.</td> </tr> <tr> <td>🛡️ Critic</td> <td>Represents the review stage and records the approval decision and review metadata.</td> </tr> </table>
 
-Transforms the analysis into a structured Markdown report containing an executive summary, analytical findings, and source references.
+Features
 
-Critic
+<p align="center"> <img src="https://img.shields.io/badge/01-Multi--Agent%20Workflow-2563EB?style=flat-square" alt="Multi-agent workflow" /> <img src="https://img.shields.io/badge/02-Live%20Web%20Search-0F766E?style=flat-square" alt="Web search" /> <img src="https://img.shields.io/badge/03-Structured%20Reports-7C3AED?style=flat-square" alt="Structured reports" /> <img src="https://img.shields.io/badge/04-State%20Management-B45309?style=flat-square" alt="State management" /> </p>
 
-Represents the report review stage. The current implementation records a predefined score and approval decision; LLM-based evaluation and feedback-driven revision are potential extensions.
-
-Workflow
-Initialization: Creates the shared research state, including the topic, language, audience, and workflow metadata.
-Research planning: Generates questions covering market conditions, key participants, and relevant risks.
-Web retrieval: Searches for relevant information and collects source metadata.
-Research synthesis: Uses the language model to summarize retrieved content.
-Analysis: Produces a consolidated analytical response from the research notes.
-Report generation: Formats the analysis and available references into Markdown.
-Review and termination: Executes the critic stage and returns the final report according to the supervisor's routing logic.
-
-The workflow is compiled as a LangGraph StateGraph, with agent outputs stored in a shared state and transitions managed through conditional edges.
-
+Multi-agent orchestration: Specialized nodes handle distinct research tasks.
+Web-grounded synthesis: LLM processing uses retrieved search-result content.
+Structured report generation: Produces Markdown reports with research findings and source links.
+Conditional graph routing: LangGraph manages agent transitions and workflow termination.
+Execution tracing: Records agent summaries and execution durations.
+Configurable model settings: Supports environment-based model selection and generation temperature.
+Shared workflow state: Tracks questions, research notes, sources, analysis, drafts, messages, and review metadata.
 Technology Stack
+
+<p align="center"> <a href="https://www.python.org/"> <img src="https://skillicons.dev/icons?i=python" width="52" alt="Python" /> </a> &nbsp; <a href="https://www.langchain.com/"> <img src="https://img.shields.io/badge/LangChain-Framework-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white" alt="LangChain" /> </a> &nbsp; <a href="https://langchain-ai.github.io/langgraph/"> <img src="https://img.shields.io/badge/LangGraph-Orchestration-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white" alt="LangGraph" /> </a> </p>
+
 Technology	Purpose
-Python	Core implementation
-LangGraph	Stateful workflow orchestration and conditional routing
-LangChain Core	Message abstractions and shared workflow integration
-LangChain Community	Tavily search tool integration
+Python	Application logic and workflow implementation
+LangGraph	State graph, conditional edges, and agent orchestration
+LangChain Core	Message types and model workflow integration
 LangChain OpenAI	Chat model interface
-OpenRouter	LLM API access through an OpenAI-compatible endpoint
-Tavily Search	Web research and search result retrieval
-python-dotenv	Environment variable loading
-IPython	Markdown report rendering in notebooks
-Key Capabilities
-Multi-agent orchestration: Separates research responsibilities into specialized workflow nodes.
-Web-grounded research: Uses retrieved web content as input to LLM-generated summaries and analysis.
-Structured reporting: Produces readable Markdown reports with source links.
-Shared state management: Tracks research notes, analysis, draft reports, review results, messages, and execution traces.
-Conditional workflow routing: Uses supervisor decisions to control agent transitions.
-Execution timing: Records the duration of individual agent steps.
-Environment-based configuration: Supports configurable model names, temperature, and revision limits.
+LangChain Community	Search tool integration
+OpenRouter	Language model API access
+Tavily Search	Web information retrieval
+python-dotenv	Environment configuration
+IPython	Markdown rendering in notebooks
+Workflow Lifecycle
+sequenceDiagram
+    participant U as User
+    participant S as Supervisor
+    participant R as Researcher
+    participant A as Analyst
+    participant W as Writer
+    participant C as Critic
+
+    U->>S: Submit research topic
+    S->>R: Start research
+    R-->>S: Research notes and sources
+    S->>A: Analyze findings
+    A-->>S: Analytical synthesis
+    S->>W: Generate report
+    W-->>S: Markdown draft
+    S->>C: Review draft
+    C-->>S: Review result
+    S-->>U: Final report and state
+
 Project Structure
-
-A recommended repository layout for the implementation:
-
 multi-agent-ai-research/
-├── research_agent.py
-├── requirements.txt
-├── .env.example
-├── .gitignore
-└── README.md
+│
+├── research_agent.py      # Main workflow implementation
+├── requirements.txt       # Python dependencies
+├── .env.example           # Environment configuration template
+├── .gitignore             # Excluded files
+└── README.md              # Project documentation
 
 
-The code can also remain in a Jupyter notebook if notebook-based experimentation and Markdown rendering are central to the project.
+The implementation can also be maintained in a Jupyter notebook if interactive experimentation and notebook-based report rendering are required.
 
-Installation
+Getting Started
 Prerequisites
 Python 3.10 or later
 An OpenRouter API key
 A Tavily API key
 1. Clone the Repository
-git clone https://github.com/Abdel-Alim/REPOSITORY_NAME.git
-cd REPOSITORY_NAME
-
 
 Replace REPOSITORY_NAME with the actual repository name.
+
+git clone https://github.com/Abdel-Alim/REPOSITORY_NAME.git
+cd REPOSITORY_NAME
 
 2. Create a Virtual Environment
 python -m venv .venv
 
-
-Activate the environment:
 
 Windows
 
@@ -127,7 +137,7 @@ source .venv/bin/activate
 
 3. Install Dependencies
 
-Create a requirements.txt file:
+Create requirements.txt:
 
 langgraph
 langchain-core
@@ -138,7 +148,7 @@ python-dotenv
 ipython
 
 
-Install the dependencies:
+Install the required packages:
 
 pip install -r requirements.txt
 
@@ -153,23 +163,19 @@ MODEL_NAME=openai/gpt-4o-mini
 TEMPERATURE=0.2
 MAX_REVISIONS=2
 
+Variable	Description
+OPENROUTER_API_KEY	API credential for the configured chat model
+TAVILY_API_KEY	API credential for web search
+MODEL_NAME	Model identifier
+TEMPERATURE	Controls model generation variability
+MAX_REVISIONS	Configured revision limit
 
-Obtain API credentials from:
+API credentials:
 
-OpenRouter: https://openrouter.ai/keys
-Tavily: https://app.tavily.com/
+OpenRouter API Keys
+Tavily Dashboard
 
-The application loads the environment variables and uses the configured model through OpenRouter's OpenAI-compatible API endpoint.
-
-Environment Variables
-Variable	Purpose	Default
-OPENROUTER_API_KEY	LLM API authentication	Required unless OPENAI_API_KEY is supplied
-TAVILY_API_KEY	Web search authentication	Required for research
-MODEL_NAME	Model identifier	openai/gpt-4o-mini
-TEMPERATURE	Model generation temperature	0.2
-MAX_REVISIONS	Maximum configured review cycles	2
-
-Security: Keep .env out of version control. Commit an .env.example file containing placeholder values instead of real credentials.
+Security: Never commit .env or expose API keys in public notebooks or logs. Use .env.example for placeholder configuration.
 
 Recommended .gitignore:
 
@@ -194,14 +200,14 @@ report = result.get("final_report", "")
 print(report)
 
 
-If the code is executed inside a Jupyter notebook, render the report as Markdown:
+To render the report in a Jupyter notebook:
 
 from IPython.display import display, Markdown
 
 display(Markdown(report))
 
 
-To research another topic, pass a different string to run_research().
+You can replace the topic with another research subject:
 
 result = run_research(
     "The electric vehicle market in the Middle East"
@@ -210,62 +216,54 @@ result = run_research(
 print(result.get("final_report", "No report generated."))
 
 
-The current research prompts are written in Arabic, so changing the topic alone does not guarantee that all research questions or outputs will be generated in English.
+The current research questions and report template are written primarily in Arabic. Changing the topic does not automatically change the entire workflow language.
 
-Output Format
+Output
 
-The generated report follows a consistent Markdown structure.
+The workflow generates a Markdown report with the following sections:
 
 # Market Research Report: [Topic]
 
 ## 1. Executive Summary
 
-An overview of the research topic and its context.
+Overview of the research subject.
 
 ## 2. Analysis and Key Findings
 
-A synthesis of the collected research and analytical findings.
+Synthesis of retrieved information and analytical observations.
 
 ## 3. Sources and References
 
 - [Source Title](https://example.com)
-- [Another Source](https://example.org)
 
 
-The returned workflow state also exposes research notes, source metadata, analysis, review information, messages, and execution traces for further inspection.
+The returned state also contains intermediate research notes, source metadata, analysis, review information, messages, and execution traces.
 
-Implementation Notes and Limitations
-
-This project is an experimental multi-agent research implementation. The following distinctions are important when evaluating its current behavior:
-
-Search provider: The implementation uses Tavily Search, not a direct Google Search integration.
-Critic implementation: The critic currently assigns a fixed score of 9.0, approves the draft unconditionally, and copies the draft into final_report.
-Revision behavior: Although the graph supports routing back to the writer, the unconditional approval means that normal execution does not exercise feedback-driven revisions.
-Source grounding: Retrieved snippets are passed to the language model for synthesis. The system does not independently verify every claim or guarantee that every conclusion is supported by a cited source.
-Error handling: Search errors are printed and processing continues, which may lead to incomplete research.
-Configuration: LLM_PROVIDER is declared in the settings but is not currently used to switch between providers.
-Language configuration: The state contains language and audience fields, but the current prompts and report template do not consistently use these settings.
-Revision configuration: The supervisor uses the configured settings value for its revision limit rather than the per-run max_revisions value stored in the state.
-
-These are opportunities for further development rather than capabilities that should be assumed to exist in the current implementation.
-
-Future Improvements
-Implement LLM-based report evaluation with explicit quality criteria.
-Support revision cycles driven by critic feedback.
-Improve citation-to-claim traceability and source validation.
-Add configurable research depth, question count, and result limits.
-Make language and audience settings influence agent prompts and report formatting.
-Add structured logging and more robust error handling.
-Add automated tests for agent nodes, routing, and end-to-end workflow execution.
-Introduce a command-line interface or web interface.
-Support report export to HTML, PDF, and DOCX.
-Track token usage, latency, and estimated API costs.
+Current Limitations
+The search implementation uses Tavily, not a direct Google Search integration.
+The critic currently returns a fixed score of 9.0 and an unconditional approval decision.
+Feedback-driven revision cycles are not meaningfully implemented.
+Search results and generated claims are not independently fact-checked.
+Search failures may result in incomplete research.
+The LLM_PROVIDER setting is declared but does not currently switch providers.
+Language and audience fields are not consistently applied to prompts.
+The per-run revision limit is not used by the supervisor's termination logic.
+Roadmap
+Implement an LLM-based critic with explicit evaluation criteria.
+Enable feedback-driven report revisions.
+Improve citation traceability and source validation.
+Add structured logging and robust error handling.
+Support configurable languages and research audiences.
+Add automated unit and integration tests.
+Introduce a command-line interface or web dashboard.
+Add token usage, latency, and API cost tracking.
+Support PDF, HTML, and DOCX exports.
 Author
 
 Abdel-Alim
 
-GitHub: @Abdel-Alim
+<p> <a href="https://github.com/Abdel-Alim"> <img src="https://img.shields.io/badge/GitHub-Abdel--Alim-181717?style=for-the-badge&logo=github" alt="GitHub Profile" /> </a> </p>
 
 License
 
-No license is currently specified. Add an appropriate LICENSE file before distributing the project under an open-source license.
+No license has been specified yet. Add a LICENSE file before distributing the project under an open-source license.
